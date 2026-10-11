@@ -63,7 +63,6 @@ class Rolodex {
     const phone = primaryPhone(c), email = primaryEmail(c);
     const city = [c.address.city, c.address.state].filter(Boolean).join(', ');
     return `<div class="face front paper">
-        <div class="rc-stripe" style="background:${contactColor(c)}"></div>
         <div class="rc-head">
           <div style="flex:1;min-width:0;padding-right:44px">
             <div class="rc-name">${esc(c.firstName)} <span class="last">${esc(c.lastName)}</span>${!c.firstName && !c.lastName ? esc(c.company) : ''}</div>

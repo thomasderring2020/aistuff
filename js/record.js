@@ -58,7 +58,6 @@ function renderRecord(container, id) {
     </div>
 
     <div class="rec-hero paper">
-      <div class="stripe" style="background:${contactColor(c)}"></div>
       <div class="top">
         <button class="avatar" data-act="photo" style="--s:74px;--c:${contactColor(c)};border:0;padding:0" aria-label="Change photo">${c.photo ? `<img src="${c.photo}" alt="">` : esc(initials(c))}</button>
         <div style="min-width:0">
@@ -81,6 +80,8 @@ function renderRecord(container, id) {
       <a class="action ${!addr ? 'off' : ''}" href="${addr ? 'https://maps.google.com/?q=' + encodeURIComponent(addr) : '#'}" target="_blank" rel="noopener">${icon('map')}Map</a>
       <a class="action ${!li ? 'off' : ''}" href="${li ? esc(li) : '#'}" target="_blank" rel="noopener">${icon('linkedin')}LinkedIn</a>
     </div>
+
+    <button class="btn intake-btn" data-act="intake">${icon('mic')}Quick intake<small>Talk — Rolo files it</small></button>
 
     ${briefHTML(c)}
 
@@ -176,6 +177,7 @@ function renderRecord(container, id) {
         ${c.tags.length ? `<div class="cline"><div class="k">Tags</div><div class="v"><div class="pill-list">${c.tags.map((t) => `<a class="pill" style="text-decoration:none;font-size:12.5px" href="#/search?q=${encodeURIComponent(t)}">${esc(t)}</a>`).join('')}</div></div></div>` : ''}
       </div>
       <p class="muted" style="font-size:12px;margin-top:10px;text-align:center">Added ${esc(fmtDate(c.createdAt, { year: true }))} · Updated ${esc(relDay(c.updatedAt))}</p>`)}
+    <div class="rec-delete"><button class="btn sm" data-act="delete">${icon('trash')}Delete contact</button></div>
   </div>`;
 
   container.onclick = (e) => recordClick(e, c, container);
@@ -197,6 +199,8 @@ async function recordClick(e, c, container) {
       c.photo = await compressImage(f, { max: 400, square: true, quality: 0.82 }); await Store.save(c); break;
     }
     case 'log': openLogSheet(c); break;
+    case 'intake': openIntake(c); break;
+    case 'delete': deleteContact(c); break;
     case 'next': openNextStepSheet(c); break;
     case 'done': completeNextStep(c); break;
     case 'all-touches': container.dataset.allTouches = c.id; renderRecord(container, c.id); break;
@@ -327,9 +331,7 @@ function openMoreSheet(c) {
     if (m === 'share') openShareSheet(c);
     if (m === 'print') printCards([c]);
     if (m === 'vcf') downloadBlob(new Blob([toVCard(c)], { type: 'text/vcard' }), `${fullName(c).replace(/\s+/g, '_')}.vcf`);
-    if (m === 'delete' && await confirmDialog(`Delete ${fullName(c)}? This can't be undone.`, { ok: 'Delete', danger: true })) {
-      await Store.remove(c.id); UI.roloFrontId = null; location.hash = '#/rolo'; toast('Contact deleted');
-    }
+    if (m === 'delete') deleteContact(c);
   };
 }
 
@@ -359,4 +361,16 @@ function promptText(title, placeholder = '', value = '') {
     $('#pt-ok', s.el).onclick = ok;
     $('#pt-v', s.el).onkeydown = (e) => { if (e.key === 'Enter') ok(); };
   });
+}
+
+/** Delete with an Undo window. `ask` shows a confirm first (record page); swipe-to-delete skips it. */
+async function deleteContact(c, { ask = true, stay = false } = {}) {
+  if (ask && !(await confirmDialog(`Delete ${fullName(c)}? You can undo right after.`, { ok: 'Delete', danger: true }))) return;
+  // snapshot this contact plus anyone who links to it, so Undo restores the links too
+  const linked = Store.list().filter((o) => o.id !== c.id && (o.referredBy === c.id || o.connections.some((x) => x.contactId === c.id)));
+  const snap = JSON.parse(JSON.stringify([c, ...linked]));
+  await Store.remove(c.id);
+  if (UI.roloFrontId === c.id) UI.roloFrontId = null;
+  if (!stay) location.hash = '#/rolo';
+  toast(`${fullName(c)} deleted`, { action: 'Undo', duration: 8000, onAction: async () => { await Store.saveMany(snap); toast('Restored'); } });
 }

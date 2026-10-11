@@ -53,6 +53,10 @@ function renderSettings(main) {
         <label class="toggle" style="margin-top:14px;align-items:flex-start"><input type="checkbox" id="st-auto" ${s.autoLog !== false ? 'checked' : ''}><span><b>Log calls, texts & emails automatically</b><br><small class="muted">When you tap Call, Text or Email in Rolo, it's logged right away. You can add a note or undo.</small></span></label></div>
     </section>
 
+    <section class="section"><div class="section-head"><h2>${icon('mic')}Quick intake</h2></div>
+      <div class="panel" style="font-size:14px"><div id="st-ai" class="muted">Checking…</div></div>
+    </section>
+
     <section class="section"><div class="section-head"><h2>${icon('lock')}Privacy</h2></div>
       <div class="menu-list settings-list">
         <button class="menu-item" data-act="pin">${icon('lock')}<span class="tx"><b>${s.pinHash ? 'Change passcode' : 'Set a passcode'}</b><small>${s.pinHash ? 'Rolo locks after ' + s.lockAfterMin + ' min away' : 'Lock Rolo with a 4-digit code'}</small></span>${icon('chevron')}</button>
@@ -77,6 +81,9 @@ function renderSettings(main) {
   </div>`;
 
   $('#st-name', main).addEventListener('change', async (e) => { Store.settings.userName = e.target.value.trim(); await Store.saveSettings(); toast('Saved'); });
+  checkAI().then((on) => { const el = $('#st-ai', main); if (el) el.innerHTML = on
+    ? '<b style="color:var(--ink)">AI sorting is on.</b> Spoken notes are sent to Claude through your Vercel site to be sorted, then you review before anything is saved.'
+    : '<b style="color:var(--ink)">Sorting on this device.</b> Works offline and nothing leaves your phone. For smarter sorting, add an ANTHROPIC_API_KEY in Vercel (see README).'; });
   $('#st-auto', main).addEventListener('change', async (e) => { Store.settings.autoLog = e.target.checked; await Store.saveSettings(); toast(e.target.checked ? 'Auto-logging on' : 'Rolo will ask before logging'); });
   $('#st-cad', main).addEventListener('change', async (e) => { Store.settings.defaultCadence = +e.target.value; await Store.saveSettings(); toast('Saved'); });
   main.onclick = async (e) => {

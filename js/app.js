@@ -153,6 +153,17 @@ document.addEventListener('visibilitychange', () => {
   if (s.pinHash && hiddenAt && Date.now() - hiddenAt > (s.lockAfterMin || 5) * 60000) requireUnlock();
 });
 
+/* ---------- Rows that open a record (div rows with data-href) ---------- */
+document.addEventListener('click', (e) => {
+  if (e.defaultPrevented) return;
+  const row = e.target.closest('[data-href]');
+  if (!row || e.target.closest('a, button, input, label')) return;
+  location.hash = row.dataset.href;
+});
+document.addEventListener('keydown', (e) => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-href]')) { e.preventDefault(); location.hash = e.target.dataset.href; }
+});
+
 /* ---------- Keyboard shortcuts ---------- */
 document.addEventListener('keydown', (e) => {
   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); location.hash = '#/search'; }

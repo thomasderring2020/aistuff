@@ -11,6 +11,13 @@ The site is connected to Vercel through GitHub. To ship a change:
 
 Vercel settings: Framework *Other*, no build command, output directory `.`.
 
+## Quick intake (optional AI sorting)
+Quick intake works out of the box with an on-device parser. For smarter sorting with Claude:
+1. Get an API key at https://console.anthropic.com
+2. In Vercel: Project → Settings → Environment Variables → add `ANTHROPIC_API_KEY` (optionally `ANTHROPIC_MODEL`).
+3. Redeploy. Settings → Quick intake will say "AI sorting is on."
+Notes are sent to Anthropic through `api/intake.js` only when you tap "Sort it". The endpoint only accepts calls from your own site, but anyone using the site can spend your API credits, so add logins before sharing it widely.
+
 ## Project layout
 ```
 index.html            app shell
@@ -25,11 +32,13 @@ js/rolodex.js         the 3D flipping wheel
 js/views.js           Today, Rolo (wheel + list), Search
 js/record.js          contact record page + its sheets
 js/editor.js          add / edit form
+js/intake.js          Quick intake: dictation, on-device parser, review screen
 js/share.js           share card (vCard / text / image), print cards
 js/importer.js        phone picker, .vcf / CSV / Excel import, export, backup
 js/settings.js        settings, groups, themes, passcode, install help
 js/app.js             router + boot
 fonts/                Inter (SIL OFL)
+api/intake.js         Vercel function for optional AI sorting
 vendor/xlsx.full.min.js  SheetJS, loaded only when importing Excel (Apache-2.0)
 ```
 

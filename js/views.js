@@ -33,12 +33,13 @@ function quickActions(c) {
   </span>`;
 }
 function contactRow(c, { sub, side, quick = true } = {}) {
-  return `<a class="row tap" href="#/c/${c.id}">
+  // a div (not <a>) so the Call/Text links inside it stay valid HTML; app.js routes taps via data-href
+  return `<div class="row tap" data-href="#/c/${c.id}" role="link" tabindex="0">
     ${avatarHTML(c)}
     <div class="main-col"><div class="t1">${esc(fullName(c))}</div><div class="t2">${sub ?? esc(roleLine(c) || primaryPhone(c) && fmtPhone(primaryPhone(c)) || '')}</div></div>
     ${side ? `<div class="side">${side}</div>` : ''}
     ${quick ? quickActions(c) : ''}
-  </a>`;
+  </div>`;
 }
 function greeting() {
   const h = new Date().getHours();
@@ -202,7 +203,7 @@ function renderRolo(container) {
         <div class="row-btns" style="justify-content:center"><a class="btn primary" href="#/new">${icon('plus')}Add a contact</a>${total ? '' : `<a class="btn" href="#/import">${icon('upload')}Import</a>`}</div></div>`;
       UI.rolodex = null; return;
     }
-    if (view === 'list') { body.innerHTML = listHTML(list); UI.rolodex = null; return; }
+    if (view === 'list') { body.innerHTML = listHTML(list); UI.rolodex = null; bindSwipe(body); return; }
     drawWheel(body, list);
   };
   drawBody();
@@ -278,7 +279,7 @@ function listHTML(list) {
     const l = letterOf(c);
     if (l !== letter) { if (letter) out += '</div>'; letter = l; out += `<div class="letter-head">${l}</div><div class="rows">`; }
     const w = warmth(c);
-    out += contactRow(c, { sub: `<span class="wdot ${w.key}"></span> ${esc(roleLine(c) || fmtPhone(primaryPhone(c)) || primaryEmail(c))}` });
+    out += `<div class="swipe" data-swipe="${c.id}"><button class="swipe-del" data-swipe-del="${c.id}" tabindex="-1">${icon('trash')}Delete</button>${contactRow(c, { sub: `<span class="wdot ${w.key}"></span> ${esc(roleLine(c) || fmtPhone(primaryPhone(c)) || primaryEmail(c))}` })}</div>`;
   });
   return out + '</div>';
 }
@@ -291,7 +292,7 @@ function searchResultsHTML(q) {
   if (!res.length) return `<div class="panel empty">${icon('search')}No matches for “${esc(q)}”.<br><small>Search looks through names, companies, family, pets, hobbies, tags and notes.</small></div>`;
   return `<div class="muted" style="font-size:12.5px;margin:0 2px 6px">${res.length} result${res.length === 1 ? '' : 's'}</div>
     <div class="panel" style="padding:4px 12px"><div class="rows">${res.map(({ contact: c, snippet }) => `
-    <a class="row tap" href="#/c/${c.id}">
+    <div class="row tap" data-href="#/c/${c.id}" role="link" tabindex="0">
       ${avatarHTML(c)}
       <div class="main-col">
         <div class="t1">${highlight(fullName(c), q)}</div>
@@ -299,7 +300,7 @@ function searchResultsHTML(q) {
         ${snippet ? `<div class="snip"><b>${esc(snippet.label)}:</b> ${highlight(snippet.text, q)}</div>` : ''}
       </div>
       ${quickActions(c)}
-    </a>`).join('')}</div></div>`;
+    </div>`).join('')}</div></div>`;
 }
 
 function renderSearch(main, q0 = '') {
@@ -329,4 +330,49 @@ function renderSearch(main, q0 = '') {
   input.addEventListener('input', debounce(draw, 100));
   res.addEventListener('click', (e) => { const s = e.target.closest('[data-s]'); if (s) { input.value = s.dataset.s; draw(); } });
   setTimeout(() => input.focus(), 50);
+}
+
+/* ---------- Swipe right-to-left on a list row to reveal Delete ---------- */
+function bindSwipe(root) {
+  if (root._swipeBound) return;
+  root._swipeBound = true;
+  const OPEN = -96;
+  let s = null, openRow = null, suppressUntil = 0;
+  const setX = (row, x) => { row.style.transform = x ? `translateX(${x}px)` : ''; };
+  const closeOpen = () => { if (openRow) { setX(openRow, 0); openRow = null; } };
+  root.addEventListener('pointerdown', (e) => {
+    const wrap = e.target.closest('.swipe'); if (!wrap || e.target.closest('.swipe-del')) return;
+    const row = wrap.querySelector('.row');
+    if (openRow && openRow !== row) closeOpen();
+    s = { wrap, row, x0: e.clientX, y0: e.clientY, base: openRow === row ? OPEN : 0, dx: 0, active: false, id: e.pointerId };
+  });
+  root.addEventListener('pointermove', (e) => {
+    if (!s || e.pointerId !== s.id) return;
+    const dx = e.clientX - s.x0, dy = e.clientY - s.y0;
+    if (!s.active) {
+      if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) { s = null; return; } // vertical scroll wins
+      if (Math.abs(dx) < 8) return;
+      s.active = true; s.wrap.classList.add('dragging');
+      try { s.wrap.setPointerCapture(e.pointerId); } catch {}
+    }
+    s.dx = dx;
+    setX(s.row, Math.min(0, Math.max(OPEN * 1.6, s.base + dx)));
+  });
+  const end = (e) => {
+    if (!s || e.pointerId !== s.id) return;
+    const st = s; s = null;
+    st.wrap.classList.remove('dragging');
+    if (!st.active) return;
+    const x = st.base + st.dx;
+    if (x < OPEN / 2) { setX(st.row, OPEN); openRow = st.row; } else { setX(st.row, 0); if (openRow === st.row) openRow = null; }
+    suppressUntil = Date.now() + 400; // swallow the click that follows a drag so the record doesn't open
+  };
+  root.addEventListener('pointerup', end);
+  root.addEventListener('pointercancel', end);
+  root.addEventListener('click', (e) => {
+    if (Date.now() < suppressUntil && !e.target.closest('[data-swipe-del]')) { e.preventDefault(); e.stopPropagation(); return; }
+    const del = e.target.closest('[data-swipe-del]');
+    if (del) { e.preventDefault(); const c = Store.get(del.dataset.swipeDel); if (c) deleteContact(c, { ask: false, stay: true }); openRow = null; return; }
+    if (openRow && e.target.closest('.row') === openRow) { e.preventDefault(); e.stopPropagation(); closeOpen(); }
+  }, true);
 }
