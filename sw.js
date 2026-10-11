@@ -1,12 +1,11 @@
 /* Rolo service worker — offline app shell. Bump VERSION on each deploy. */
-const VERSION = 'rolo-v1.0.0';
+const VERSION = 'rolo-v1.1.0';
 const SHELL = [
   './', 'index.html', 'styles.css', 'manifest.webmanifest',
   'js/util.js', 'js/icons.js', 'js/db.js', 'js/model.js', 'js/sample.js',
   'js/rolodex.js', 'js/views.js', 'js/record.js', 'js/editor.js',
   'js/share.js', 'js/importer.js', 'js/settings.js', 'js/app.js',
-  'fonts/inter-latin-wght-normal.woff2', 'fonts/fraunces-latin-wght-normal.woff2',
-  'fonts/fraunces-latin-wght-italic.woff2',
+  'fonts/inter-latin-wght-normal.woff2',
   'icons/icon.svg', 'icons/icon-32.png', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'
 ];
 

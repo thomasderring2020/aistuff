@@ -59,7 +59,7 @@ async function cardImage(c, inc) {
   x.restore();
   x.fillStyle = contactColor(c); x.beginPath(); x.roundRect(cx, cy + 40, 10, ch - 80, [0, 6, 6, 0]); x.fill();
   // name
-  x.fillStyle = ink; x.font = '600 74px Fraunces, Georgia, serif'; x.textBaseline = 'alphabetic';
+  x.fillStyle = ink; x.font = '700 70px Inter, system-ui, sans-serif'; x.textBaseline = 'alphabetic';
   x.fillText(fullName(c), cx + 70, cy + 140, cw - 140);
   let y = cy + 196;
   if (inc.work && roleLine(c)) { x.fillStyle = ink2; x.font = '400 34px Inter, system-ui, sans-serif'; x.fillText(roleLine(c), cx + 72, y, cw - 140); y += 30; }

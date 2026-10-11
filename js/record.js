@@ -11,7 +11,7 @@ function section(title, ic, body, { action = '', id = '' } = {}) {
 function briefHTML(c) {
   const items = [];
   const lt = lastAnyTouch(c);
-  if (lt) items.push(['clock', `<b>Last ${esc((TOUCH_TYPES[lt.type]?.label || 'note').toLowerCase())} ${esc(relDay(lt.date))}:</b> ${esc(lt.note || '—')}`]);
+  if (lt) items.push(['clock', `<b>Last ${esc((TOUCH_TYPES[lt.type]?.label || 'note').toLowerCase())} ${esc(relDay(lt.date))}</b>${lt.note ? ': ' + esc(lt.note) : ' <span class="muted">· no notes</span>'}`]);
   const fam = [];
   if (c.spouse.name) fam.push(`Spouse <b>${esc(c.spouse.name)}</b>`);
   if (c.kids.length) fam.push(c.kids.map((k) => { const a = kidAge(k); return `<b>${esc(k.name || 'Kid')}</b>${a != null ? ` (${ageLabel(a)})` : ''}`; }).join(', '));
@@ -21,6 +21,8 @@ function briefHTML(c) {
   if (c.hobbies.length) likes.push(esc(c.hobbies.slice(0, 3).join(', ')));
   if (c.favoriteTreat) likes.push(`loves <b>${esc(c.favoriteTreat)}</b>`);
   if (likes.length) items.push(['heart', likes.join(' · ')]);
+  const spots = [c.favoriteLunch && `lunch at <b>${esc(c.favoriteLunch)}</b>`, c.favoriteDinner && `dinner at <b>${esc(c.favoriteDinner)}</b>`].filter(Boolean);
+  if (spots.length) items.push(['utensils', 'Likes ' + spots.join(', ')]);
   const up = contactDates(c, 30)[0];
   if (up) items.push(['calendar', `<b>${esc(up.label)}</b> ${up.inDays === 0 ? 'is today' : esc(relDay(up.date))}${up.turning ? ` (turns ${up.turning})` : ''}`]);
   if (c.nextStep.text) items.push(['bell', `<b>Next step:</b> ${esc(c.nextStep.text)}`]);
@@ -125,6 +127,10 @@ function renderRecord(container, id) {
     ${section('Personal', 'heart', `<div class="panel kv-grid">
         ${c.hobbies.length ? `<div><div class="kv"><div style="flex:1"><div class="k">Hobbies & interests</div><div class="pill-list" style="margin-top:6px">${c.hobbies.map((h) => `<span class="pill">${esc(h)}</span>`).join('')}</div></div></div></div>` : ''}
         ${c.favoriteTreat ? `<div class="kv">${icon('coffee')}<div><div class="k">Favorite treat / small gift</div><div class="v">${esc(c.favoriteTreat)}</div></div></div>` : ''}
+        ${c.favoriteLunch || c.favoriteDinner ? `<div class="grid2" style="gap:10px">
+          ${c.favoriteLunch ? `<div class="kv">${icon('utensils')}<div><div class="k">Lunch spot</div><div class="v">${esc(c.favoriteLunch)}</div></div></div>` : ''}
+          ${c.favoriteDinner ? `<div class="kv">${icon('moon')}<div><div class="k">Dinner spot</div><div class="v">${esc(c.favoriteDinner)}</div></div></div>` : ''}
+        </div>` : ''}
         ${c.giftIdeas ? `<div class="kv">${icon('sparkle')}<div><div class="k">Gift ideas</div><div class="v">${esc(c.giftIdeas)}</div></div></div>` : ''}
         <div class="kv">${icon('gift')}<div style="flex:1"><div class="k" style="display:flex;justify-content:space-between">Gift log <button class="link-btn" data-act="add-gift">+ Add</button></div>
           ${c.gifts.length ? `<div style="margin-top:4px">${[...c.gifts].sort((a, b) => (b.date || '').localeCompare(a.date || '')).map((g) => `<div class="v" style="font-size:14px;display:flex;gap:8px;align-items:baseline"><span class="muted tnum" style="font-size:12px;min-width:84px">${esc(fmtDate(g.date, { year: true }))}</span><span style="flex:1">${esc(g.item)}${g.occasion ? ` <span class="muted">· ${esc(g.occasion)}</span>` : ''}</span><button class="icon-btn" data-act="del-gift" data-gid="${g.id}" style="width:28px;height:28px" aria-label="Remove">${icon('x')}</button></div>`).join('')}</div>` : `<div class="v muted" style="font-size:13.5px">Track what you've given so you never repeat a gift.</div>`}
@@ -226,18 +232,20 @@ async function recordClick(e, c, container) {
 
 /* ---------- Sheets used by the record page ---------- */
 function openLogSheet(c, type = 'call', opts = {}) {
-  const now = new Date();
+  const existing = opts.touchId ? c.touches.find((x) => x.id === opts.touchId) : null;
+  if (existing) type = existing.type;
+  const now = existing ? new Date(existing.date) : new Date();
   const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
   const s = openSheet(`
     <div class="type-chips">${Object.entries(TOUCH_TYPES).filter(([k]) => k !== 'gift').map(([k, v]) => `<button class="chip ${k === type ? 'on' : ''}" data-type="${k}">${icon(v.icon)}${v.label}</button>`).join('')}</div>
-    <label class="field"><span>What did you talk about?</span><textarea id="lg-note" rows="4" placeholder="Kids, plans, what they need, what you promised…" autofocus></textarea></label>
+    <label class="field"><span>What did you talk about?</span><textarea id="lg-note" rows="4" placeholder="Kids, plans, what they need, what you promised…" autofocus>${esc(existing ? existing.note : '')}</textarea></label>
     <label class="field"><span>When</span><input id="lg-date" type="datetime-local" value="${local}"></label>
     <div class="form-section" style="margin-top:6px"><h3>${icon('bell')}Next step</h3>
       <label class="field"><input id="lg-next" placeholder="e.g. Send quote, invite to lunch" value="${esc(c.nextStep.text)}"></label>
       ${dueChipsHTML(c.nextStep.due, 'lg-due')}
     </div>
     <div class="row-btns"><button class="btn ghost" data-sheet-close>Cancel</button><button class="btn primary" id="lg-save">Save</button></div>`,
-    { title: `Log ${opts.auto ? 'that ' : ''}touch · ${c.firstName || fullName(c)}` });
+    { title: `${existing ? 'Add a note' : 'Log touch'} · ${c.firstName || fullName(c)}` });
   let t = type;
   s.el.querySelector('.type-chips').onclick = (e) => {
     const b = e.target.closest('[data-type]'); if (!b) return;
@@ -246,11 +254,13 @@ function openLogSheet(c, type = 'call', opts = {}) {
   bindDueChips(s.el, 'lg-due');
   $('#lg-save', s.el).onclick = async () => {
     const d = $('#lg-date', s.el).value;
-    c.touches.push({ id: uid('t'), type: t, date: d ? new Date(d).toISOString() : new Date().toISOString(), note: $('#lg-note', s.el).value.trim() });
+    const entry = { type: t, date: d ? new Date(d).toISOString() : new Date().toISOString(), note: $('#lg-note', s.el).value.trim() };
+    const cur = existing && c.touches.find((x) => x.id === existing.id);
+    if (cur) Object.assign(cur, entry); else c.touches.push({ id: uid('t'), ...entry });
     c.nextStep = { text: $('#lg-next', s.el).value.trim(), due: $('#lg-due', s.el).value };
     await Store.save(c);
     s.close();
-    toast(`${TOUCH_TYPES[t].label} logged`);
+    toast(cur ? 'Note saved' : `${TOUCH_TYPES[t].label} logged`);
   };
 }
 

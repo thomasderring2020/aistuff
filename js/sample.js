@@ -14,7 +14,7 @@ function buildSampleContacts() {
   const mk = (o) => normalizeContact({ ...blankContact(), ...o });
 
   const list = [
-    mk({ id: 's-hale', firstName: 'Marcus', lastName: 'Hale', company: 'Bluestem Manufacturing', title: 'CFO',
+    mk({ id: 's-hale', favoriteLunch: 'Smoke & Oak BBQ', favoriteDinner: 'Riverside Steakhouse', firstName: 'Marcus', lastName: 'Hale', company: 'Bluestem Manufacturing', title: 'CFO',
       phones: [P('9185550142'), P('9185550100', 'Office')], emails: [E('mhale@bluestem-mfg.example')],
       address: A('4100 Industrial Pkwy', 'Tulsa', 'OK', '74107'), linkedin: 'linkedin.com/in/marcushale-example',
       groupIds: ['g-clients'], tags: ['manufacturing', 'decision maker'],
@@ -31,7 +31,7 @@ function buildSampleContacts() {
       touches: [T(18, 'call', 'Talked through fleet renewal. Two new trucks coming in Q1. Caleb made varsity baseball.'), T(46, 'meeting', 'Lunch on Cherry Street. Wants a second look at umbrella limits.'), T(95, 'email', 'Sent benchmarking report.')],
       custom: [{ id: uid('f'), label: 'Employees', value: '140' }, { id: uid('f'), label: 'Current carrier', value: 'Plains Mutual' }] }),
 
-    mk({ id: 's-ortiz', firstName: 'Elena', lastName: 'Ortiz', company: 'Ortiz & Reed CPAs', title: 'Managing Partner',
+    mk({ id: 's-ortiz', favoriteLunch: 'Green Fork Salad Co.', favoriteDinner: 'Vineyard Bistro', firstName: 'Elena', lastName: 'Ortiz', company: 'Ortiz & Reed CPAs', title: 'Managing Partner',
       phones: [P('9185550177')], emails: [E('elena@ortizreed.example')], address: A('', 'Broken Arrow', 'OK', ''),
       groupIds: ['g-partners', 'g-coi'], tags: ['CPA', 'referrals'], prefs: { method: 'text', bestTime: 'Lunch hour', timezone: '' },
       nextStep: { text: 'Thank-you note for the Hale referral', due: dIn(0) },
@@ -42,7 +42,7 @@ function buildSampleContacts() {
       birthday: mdIn(62), metAt: 'BNI chapter', favorite: true,
       touches: [T(6, 'text', 'Heads up she\'s sending over a dental practice owner.'), T(33, 'meeting', 'Coffee downtown. Tax season is her blackout — Feb to April 15.')] }),
 
-    mk({ id: 's-nguyen', firstName: 'David', lastName: 'Nguyen', company: 'Red Dirt Logistics', title: 'Owner',
+    mk({ id: 's-nguyen', favoriteLunch: 'Pho Saigon Kitchen', favoriteDinner: '', firstName: 'David', lastName: 'Nguyen', company: 'Red Dirt Logistics', title: 'Owner',
       phones: [P('4055550133')], emails: [E('david@reddirtlogistics.example')], address: A('', 'Oklahoma City', 'OK', ''),
       groupIds: ['g-prospects'], tags: ['transportation', 'hot lead'], prefs: { method: 'call', bestTime: 'Mornings', timezone: '' },
       nextStep: { text: 'Follow up on cargo quote', due: dIn(1) }, pinned: ['Burned by last broker on a claim — lead with service'],
@@ -50,7 +50,7 @@ function buildSampleContacts() {
       hobbies: ['Golf', 'Thunder basketball'], favoriteTreat: 'Banh mi from his mom\'s shop', metAt: 'Referred at trucking expo',
       touches: [T(3, 'call', 'Discovery call. 22 trucks, renewal 1/1. Sending cargo quote by Friday.')] }),
 
-    mk({ id: 's-brooks', firstName: 'Tasha', lastName: 'Brooks', company: 'Prairie Fire Builders', title: 'VP Operations',
+    mk({ id: 's-brooks', favoriteLunch: '', favoriteDinner: 'Lakeside Grill', firstName: 'Tasha', lastName: 'Brooks', company: 'Prairie Fire Builders', title: 'VP Operations',
       phones: [P('9185550190')], emails: [E('tbrooks@prairiefire.example')], address: A('', 'Tahlequah', 'OK', ''), linkedin: 'tasha-brooks-example',
       groupIds: ['g-clients'], tags: ['construction'], prefs: { method: 'email', bestTime: '', timezone: '' },
       nextStep: { text: 'Schedule safety program review', due: dIn(6) },
@@ -60,7 +60,7 @@ function buildSampleContacts() {
       hobbies: ['Kayaking the Illinois River', 'Gardening'], favoriteTreat: 'Lemon bars', birthday: mdIn(120),
       touches: [T(21, 'email', 'Sent certificate of insurance for the new job site.'), T(55, 'call', 'Discussed builder\'s risk for the hospital wing project.')] }),
 
-    mk({ id: 's-patel', firstName: 'Raj', lastName: 'Patel', company: 'Riverbend Hospitality', title: 'Director of Finance',
+    mk({ id: 's-patel', favoriteLunch: '', favoriteDinner: 'Saffron Indian Kitchen', firstName: 'Raj', lastName: 'Patel', company: 'Riverbend Hospitality', title: 'Director of Finance',
       phones: [P('4795550118')], emails: [E('rpatel@riverbend.example')], address: A('', 'Fayetteville', 'AR', ''),
       groupIds: ['g-clients'], tags: ['hospitality', 'benefits'],
       nextStep: { text: 'Open enrollment kickoff meeting', due: dIn(12) },
@@ -79,7 +79,7 @@ function buildSampleContacts() {
       groupIds: ['g-vendors'], tags: ['underwriter', 'commercial auto'],
       hobbies: ['Cycling'], favoriteTreat: 'Cold brew', touches: [T(40, 'call', 'Pushed back on the Hale fleet rate. Can move 6% with telematics.')] }),
 
-    mk({ id: 's-reyes', firstName: 'Carmen', lastName: 'Reyes', company: 'Green Country Realty', title: 'Broker',
+    mk({ id: 's-reyes', favoriteLunch: 'Casa Linda Cantina', favoriteDinner: '', firstName: 'Carmen', lastName: 'Reyes', company: 'Green Country Realty', title: 'Broker',
       phones: [P('9185550155')], emails: [E('carmen@gcrealty.example')], address: A('', 'Tulsa', 'OK', ''),
       groupIds: ['g-partners'], tags: ['real estate', 'personal lines referrals'],
       nextStep: { text: 'Drop off cookies for her office', due: dIn(-6) },
@@ -87,7 +87,7 @@ function buildSampleContacts() {
       hobbies: ['Salsa dancing', 'Home flipping'], favoriteTreat: 'Tres leches', birthday: mdIn(45),
       touches: [T(80, 'meeting', 'Lunch. She\'ll send new homebuyers our way for home + auto quotes.')] }),
 
-    mk({ id: 's-thompson', firstName: 'Bill', lastName: 'Thompson', company: 'Thompson Ag Supply', title: 'President',
+    mk({ id: 's-thompson', favoriteLunch: 'Main Street Diner', favoriteDinner: '', firstName: 'Bill', lastName: 'Thompson', company: 'Thompson Ag Supply', title: 'President',
       phones: [P('9185550109'), P('9185550110', 'Home')], emails: [E('bill@thompsonag.example')], address: A('Rt 2 Box 114', 'Stilwell', 'OK', '74960'),
       groupIds: ['g-clients'], tags: ['agriculture', 'farm & ranch'], prefs: { method: 'call', bestTime: 'Early — he\'s up at 5', timezone: '' },
       pinned: ['Does not text. Call or stop by.'], spouse: { name: 'Margaret' }, anniversary: mdIn(160),
@@ -96,14 +96,14 @@ function buildSampleContacts() {
       hobbies: ['Cattle', 'Quail hunting', 'Gospel bluegrass'], favoriteTreat: 'Strawberry rhubarb pie', birthday: mdIn(14),
       touches: [T(120, 'meeting', 'Farm visit. New hay barn needs to be added to the policy.')] }),
 
-    mk({ id: 's-chen', firstName: 'Olivia', lastName: 'Chen', company: 'Lumen Health Partners', title: 'HR Director',
+    mk({ id: 's-chen', favoriteLunch: 'Sakura Sushi Bar', favoriteDinner: '', firstName: 'Olivia', lastName: 'Chen', company: 'Lumen Health Partners', title: 'HR Director',
       phones: [P('9185550186')], emails: [E('ochen@lumenhealth.example')], address: A('', 'Tulsa', 'OK', ''), linkedin: 'olivia-chen-hr-example',
       groupIds: ['g-clients'], tags: ['benefits', 'healthcare'],
       nextStep: { text: 'Send updated plan comparison', due: dIn(3) },
       kids: [{ id: uid('k'), name: 'Noah', age: 5, ageAsOf: asOf(30) }], hobbies: ['Yoga', 'Book club'], favoriteTreat: 'Matcha anything',
       touches: [T(9, 'call', 'Open enrollment questions. Employees confused about HSA vs FSA — offered a lunch-and-learn.'), T(37, 'email', 'Renewal numbers sent.')] }),
 
-    mk({ id: 's-morgan', firstName: 'Grant', lastName: 'Morgan', company: 'Redbud Ridge Golf Club', title: 'General Manager',
+    mk({ id: 's-morgan', favoriteLunch: '', favoriteDinner: 'The Clubhouse Grill', firstName: 'Grant', lastName: 'Morgan', company: 'Redbud Ridge Golf Club', title: 'General Manager',
       phones: [P('9185550147')], emails: [E('gmorgan@redbudridge.example')], address: A('', 'Tahlequah', 'OK', ''),
       groupIds: ['g-coi'], tags: ['golf', 'connector'], hobbies: ['Golf (2 handicap)', 'Fly fishing'],
       favoriteTreat: 'Bourbon — Weller', pinned: ['Knows every business owner in town'],
@@ -123,7 +123,7 @@ function buildSampleContacts() {
       kids: [{ id: uid('k'), name: 'Ruby', age: 2, ageAsOf: asOf(60) }],
       touches: [T(28, 'text', 'Congrats on the second location!')] }),
 
-    mk({ id: 's-foster', firstName: 'Kevin', lastName: 'Foster', company: 'Foster Wealth Advisors', title: 'Financial Advisor',
+    mk({ id: 's-foster', favoriteLunch: 'Big Sky Burgers', favoriteDinner: 'Ember Steakhouse', firstName: 'Kevin', lastName: 'Foster', company: 'Foster Wealth Advisors', title: 'Financial Advisor',
       phones: [P('9185550173')], emails: [E('kfoster@fosterwealth.example')], address: A('', 'Tulsa', 'OK', ''), linkedin: 'kevin-foster-cfp-example',
       groupIds: ['g-partners'], tags: ['financial advisor', 'life & disability'],
       nextStep: { text: 'Co-host estate planning lunch & learn', due: dIn(20) },
@@ -152,7 +152,7 @@ function buildSampleContacts() {
       groupIds: ['g-vendors'], tags: ['wholesaler', 'E&S'], hobbies: ['Chiefs football', 'BBQ'],
       touches: [T(25, 'email', 'Placed the auto body risk with an E&S market.')] }),
 
-    mk({ id: 's-young', firstName: 'Natalie', lastName: 'Young', company: 'Young & Co. Marketing', title: 'Founder',
+    mk({ id: 's-young', favoriteLunch: '', favoriteDinner: 'Little Italy Trattoria', firstName: 'Natalie', lastName: 'Young', company: 'Young & Co. Marketing', title: 'Founder',
       phones: [P('9185550181')], emails: [E('natalie@youngco.example')], address: A('', 'Tulsa', 'OK', ''), linkedin: 'natalieyoung-example',
       groupIds: ['g-personal', 'g-coi'], tags: ['marketing', 'friend'], spouse: { name: 'Ben' },
       hobbies: ['Pickleball', 'Thrift flipping'], favoriteTreat: 'Sour gummy worms', birthday: mdIn(30),

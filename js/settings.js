@@ -2,10 +2,12 @@
 'use strict';
 
 const THEMES = [
-  { key: 'ledger', name: 'Midnight Ledger', bg: '#131b30', paper: '#f5eedd', accent: '#d6b46c' },
-  { key: 'desk', name: 'Executive Desk', bg: '#1d1611', paper: '#f4e9d2', accent: '#8c2f39' },
-  { key: 'forest', name: 'Forest & Paper', bg: '#111e18', paper: '#f2eee3', accent: '#c98552' }
+  { key: 'system', name: 'Match device', icon: 'smartphone' },
+  { key: 'light', name: 'Light', icon: 'sun' },
+  { key: 'dark', name: 'Dark', icon: 'moon' }
 ];
+const darkMQ = window.matchMedia('(prefers-color-scheme: dark)');
+darkMQ.addEventListener('change', () => { if ((Store.settings.theme || 'system') === 'system') applyTheme(); });
 
 const ROADMAP = [
   ['camera', 'Business card scanning', 'Snap a card, Rolo fills in the contact.'],
@@ -16,8 +18,10 @@ const ROADMAP = [
 ];
 
 function applyTheme() {
-  const t = Store.settings.theme || 'ledger';
+  const pref = Store.settings.theme || 'system';
+  const t = pref === 'system' ? (darkMQ.matches ? 'dark' : 'light') : pref;
   document.documentElement.dataset.theme = t;
+  try { localStorage.setItem('rolo-theme', JSON.stringify(pref)); } catch {} // lets index.html pick the theme before first paint
   const tc = getComputedStyle(document.documentElement).getPropertyValue('--theme-color').trim();
   const m = $('meta[name="theme-color"]'); if (m && tc) m.content = tc;
 }
@@ -34,7 +38,7 @@ function renderSettings(main) {
 
     <section class="section"><div class="section-head"><h2>${icon('palette')}Look</h2></div>
       <div class="theme-pick">${THEMES.map((t) => `<button class="theme-opt ${s.theme === t.key ? 'on' : ''}" data-pick-theme="${t.key}">
-        <div class="swatch" style="background:${t.bg}"><b style="background:${t.accent}"></b><i style="background:${t.paper}"></i></div><div class="nm">${t.name}</div></button>`).join('')}</div>
+        <div class="swatch ${t.key}"><b></b><i></i></div><div class="nm">${icon(t.icon)}${t.name}</div></button>`).join('')}</div>
     </section>
 
     <section class="section"><div class="section-head"><h2>${icon('tag')}Groups</h2><button class="link-btn" data-act="add-group">+ New group</button></div>
@@ -45,7 +49,8 @@ function renderSettings(main) {
     <section class="section"><div class="section-head"><h2>${icon('flame')}Keep in touch</h2></div>
       <div class="panel"><label class="field" style="margin:0"><span>Default cadence (contacts without a group)</span>
         <select id="st-cad">${CADENCES.slice(1).map(([v, l]) => opt(v, l, s.defaultCadence)).join('')}</select>
-        <small>Warmth fades as time passes without a call, text, email or meeting.</small></label></div>
+        <small>Warmth fades as time passes without a call, text, email or meeting.</small></label>
+        <label class="toggle" style="margin-top:14px;align-items:flex-start"><input type="checkbox" id="st-auto" ${s.autoLog !== false ? 'checked' : ''}><span><b>Log calls, texts & emails automatically</b><br><small class="muted">When you tap Call, Text or Email in Rolo, it's logged right away. You can add a note or undo.</small></span></label></div>
     </section>
 
     <section class="section"><div class="section-head"><h2>${icon('lock')}Privacy</h2></div>
@@ -68,10 +73,11 @@ function renderSettings(main) {
       <div class="panel" style="padding:6px 14px">${ROADMAP.map(([i, t, d]) => `<div class="row" style="min-height:0">${`<span class="tl-ic">${icon(i)}</span>`}<div class="main-col"><div class="t1">${t}</div><div class="t2" style="white-space:normal">${d}</div></div></div>`).join('')}</div>
     </section>
 
-    <p class="ver">Rolo prototype · v1.0 · Your contacts never leave this device.</p>
+    <p class="ver">Rolo prototype · v1.1 · Your contacts never leave this device.</p>
   </div>`;
 
   $('#st-name', main).addEventListener('change', async (e) => { Store.settings.userName = e.target.value.trim(); await Store.saveSettings(); toast('Saved'); });
+  $('#st-auto', main).addEventListener('change', async (e) => { Store.settings.autoLog = e.target.checked; await Store.saveSettings(); toast(e.target.checked ? 'Auto-logging on' : 'Rolo will ask before logging'); });
   $('#st-cad', main).addEventListener('change', async (e) => { Store.settings.defaultCadence = +e.target.value; await Store.saveSettings(); toast('Saved'); });
   main.onclick = async (e) => {
     const th = e.target.closest('[data-pick-theme]');

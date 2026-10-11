@@ -110,21 +110,44 @@ document.addEventListener('click', (e) => {
   if (a.classList.contains('off') || a.getAttribute('href') === '#') { e.preventDefault(); return; }
   const c = Store.get(a.dataset.id); if (!c) return;
   const type = a.dataset.log;
-  pendingLog = { id: c.id, type, at: Date.now(), hiddenAt: null };
   const verb = { call: 'call', text: 'text', email: 'email' }[type];
+  const who = c.firstName || fullName(c);
+  if (Store.settings.autoLog !== false) {
+    // Log it right away. Skip if the same kind of touch was just logged (double taps, call-backs).
+    const recent = c.touches.find((t) => t.type === type && Date.now() - new Date(t.date).getTime() < 10 * 60000);
+    const touch = recent || { id: uid('t'), type, date: new Date().toISOString(), note: '', auto: true };
+    if (!recent) { c.touches.push(touch); Store.save(c); }
+    pendingLog = { id: c.id, type, touchId: touch.id, at: Date.now(), hiddenAt: null, auto: true };
+    setTimeout(() => showLoggedToast(c, touch.id, verb), 700);
+    return;
+  }
+  pendingLog = { id: c.id, type, at: Date.now(), hiddenAt: null };
   setTimeout(() => {
     if (!pendingLog || pendingLog.id !== c.id) return;
-    toast(`Log this ${verb} with ${c.firstName || fullName(c)}?`, { action: 'Log it', duration: 12000, onAction: () => { pendingLog = null; openLogSheet(c, type); } });
+    toast(`Log this ${verb} with ${who}?`, { action: 'Log it', duration: 12000, onAction: () => { pendingLog = null; openLogSheet(c, type); } });
   }, 900);
 }, true);
+
+function showLoggedToast(c, touchId, verb) {
+  toast(`${verb[0].toUpperCase() + verb.slice(1)} with ${c.firstName || fullName(c)} logged`, {
+    duration: 9000,
+    actions: [
+      { label: 'Add note', onAction: () => { pendingLog = null; openLogSheet(c, null, { touchId }); } },
+      { label: 'Undo', onAction: async () => { pendingLog = null; c.touches = c.touches.filter((t) => t.id !== touchId); await Store.save(c); toast('Removed'); } }
+    ]
+  });
+}
 
 let hiddenAt = null;
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) { hiddenAt = Date.now(); if (pendingLog) pendingLog.hiddenAt = hiddenAt; return; }
   // back from a call/text: offer to log it right away
   if (pendingLog && pendingLog.hiddenAt && Date.now() - pendingLog.hiddenAt > 6000 && Date.now() - pendingLog.at < 45 * 60000) {
-    const c = Store.get(pendingLog.id); const t = pendingLog.type; pendingLog = null;
-    if (c) setTimeout(() => openLogSheet(c, t, { auto: true }), 350);
+    const p = pendingLog; pendingLog = null;
+    const c = Store.get(p.id);
+    // Already logged: just offer a note. Otherwise ask to log it.
+    if (c && p.auto) setTimeout(() => showLoggedToast(c, p.touchId, { call: 'call', text: 'text', email: 'email' }[p.type]), 350);
+    else if (c) setTimeout(() => openLogSheet(c, p.type), 350);
   }
   const s = Store.settings;
   if (s.pinHash && hiddenAt && Date.now() - hiddenAt > (s.lockAfterMin || 5) * 60000) requireUnlock();

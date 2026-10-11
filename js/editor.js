@@ -138,6 +138,10 @@ function renderEditor(main, id) {
     <div class="form-section"><h3>${icon('gift')}Personal</h3>
       <label class="field"><span>Hobbies & interests</span><input name="hobbies" value="${esc(c.hobbies.join(', '))}" placeholder="Golf, bass fishing, OSU football"><small>Separate with commas</small></label>
       <label class="field"><span>Favorite treat / small gift</span><input name="favoriteTreat" value="${esc(c.favoriteTreat)}" placeholder="e.g. Peanut brittle, Diet Coke, IPA"></label>
+      <div class="grid2">
+        <label class="field"><span>Favorite lunch spot</span><input name="favoriteLunch" value="${esc(c.favoriteLunch)}" placeholder="e.g. Taco place on Main"></label>
+        <label class="field"><span>Favorite dinner spot</span><input name="favoriteDinner" value="${esc(c.favoriteDinner)}" placeholder="e.g. Steakhouse downtown"></label>
+      </div>
       <label class="field"><span>Gift ideas</span><input name="giftIdeas" value="${esc(c.giftIdeas)}" placeholder="Things they'd love"></label>
     </div>
 
@@ -243,6 +247,7 @@ function renderEditor(main, id) {
     out.pets = rows('pet').map((r) => ({ id: uid('p'), name: val(r, 'name'), kind: val(r, 'kind') })).filter((p) => p.name || p.kind);
     out.hobbies = v('hobbies').split(',').map((s) => s.trim()).filter(Boolean);
     out.favoriteTreat = v('favoriteTreat'); out.giftIdeas = v('giftIdeas');
+    out.favoriteLunch = v('favoriteLunch'); out.favoriteDinner = v('favoriteDinner');
     out.birthday = readMd($('[data-md="birthday"]', form));
     out.keyDates = rows('date').map((r) => ({ id: r.dataset.id, label: val(r, 'label'), date: val(r, 'date'), recurring: val(r, 'recurring') })).filter((d) => d.date);
     out.metAt = v('metAt');

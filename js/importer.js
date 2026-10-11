@@ -77,7 +77,7 @@ const MAP_FIELDS = [
   ['', '— Skip —'], ['fullName', 'Full name'], ['firstName', 'First name'], ['lastName', 'Last name'], ['nickname', 'Nickname'],
   ['company', 'Company'], ['title', 'Title'], ['phone_mobile', 'Mobile phone'], ['phone_work', 'Work phone'], ['phone_home', 'Home phone'],
   ['email', 'Email (work)'], ['email_personal', 'Email (personal)'], ['street', 'Street'], ['city', 'City'], ['state', 'State'], ['zip', 'ZIP'],
-  ['linkedin', 'LinkedIn'], ['website', 'Website'], ['birthday', 'Birthday'], ['spouse', 'Spouse'], ['hobbies', 'Hobbies'],
+  ['linkedin', 'LinkedIn'], ['website', 'Website'], ['birthday', 'Birthday'], ['spouse', 'Spouse'], ['hobbies', 'Hobbies'], ['favoriteLunch', 'Lunch spot'], ['favoriteDinner', 'Dinner spot'],
   ['tags', 'Tags'], ['group', 'Group'], ['notes', 'Notes'], ['metAt', 'How you met']
 ];
 function guessField(h) {
@@ -90,7 +90,7 @@ function guessField(h) {
     [/personal e ?mail|home e ?mail|e ?mail 2/, 'email_personal'], [/e ?mail/, 'email'],
     [/street|address 1|address line|^address$/, 'street'], [/city|town/, 'city'], [/state|province|region/, 'state'], [/zip|postal/, 'zip'],
     [/linkedin/, 'linkedin'], [/web|url|site/, 'website'], [/birth/, 'birthday'], [/spouse|partner|wife|husband/, 'spouse'],
-    [/hobb|interest/, 'hobbies'], [/tag|categor|label/, 'tags'], [/group|segment|type/, 'group'], [/note|comment/, 'notes'], [/met|source|lead source/, 'metAt']
+    [/lunch/, 'favoriteLunch'], [/dinner|restaurant/, 'favoriteDinner'], [/hobb|interest/, 'hobbies'], [/tag|categor|label/, 'tags'], [/group|segment|type/, 'group'], [/note|comment/, 'notes'], [/met|source|lead source/, 'metAt']
   ];
   const hit = rules.find(([re]) => re.test(s));
   return hit ? hit[1] : '';
@@ -237,13 +237,13 @@ function showPhoneImportHelp() {
 /* ---------------- Export & backup ---------------- */
 function csvCell(v) { v = String(v ?? ''); return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v; }
 function exportCSV() {
-  const head = ['First Name', 'Last Name', 'Nickname', 'Company', 'Title', 'Mobile Phone', 'Work Phone', 'Email', 'Street', 'City', 'State', 'ZIP', 'LinkedIn', 'Website', 'Birthday', 'Spouse', 'Kids', 'Pets', 'Hobbies', 'Favorite Treat', 'Groups', 'Tags', 'Next Step', 'Next Step Due', 'Last Touch', 'Met'];
+  const head = ['First Name', 'Last Name', 'Nickname', 'Company', 'Title', 'Mobile Phone', 'Work Phone', 'Email', 'Street', 'City', 'State', 'ZIP', 'LinkedIn', 'Website', 'Birthday', 'Spouse', 'Kids', 'Pets', 'Hobbies', 'Favorite Treat', 'Lunch Spot', 'Dinner Spot', 'Groups', 'Tags', 'Next Step', 'Next Step Due', 'Last Touch', 'Met'];
   const rows = Store.sorted().map((c) => [
     c.firstName, c.lastName, c.nickname, c.company, c.title,
     (c.phones.find((p) => /mobile|cell/i.test(p.label)) || {}).value, (c.phones.find((p) => !/mobile|cell/i.test(p.label)) || {}).value,
     primaryEmail(c), c.address.street, c.address.city, c.address.state, c.address.zip, c.linkedin, c.website, c.birthday, c.spouse.name,
     c.kids.map((k) => `${k.name} (${kidAge(k) ?? '?'})`).join('; '), c.pets.map((p) => `${p.name}${p.kind ? ' - ' + p.kind : ''}`).join('; '),
-    c.hobbies.join('; '), c.favoriteTreat, contactGroups(c).map((g) => g.name).join('; '), c.tags.join('; '),
+    c.hobbies.join('; '), c.favoriteTreat, c.favoriteLunch, c.favoriteDinner, contactGroups(c).map((g) => g.name).join('; '), c.tags.join('; '),
     c.nextStep.text, c.nextStep.due, lastAnyTouch(c) ? lastAnyTouch(c).date.slice(0, 10) : '', c.metAt
   ]);
   const csv = [head, ...rows].map((r) => r.map(csvCell).join(',')).join('\r\n');

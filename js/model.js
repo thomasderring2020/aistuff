@@ -2,14 +2,14 @@
 'use strict';
 
 const GROUP_COLORS = [
-  { key: 'sapphire', hex: '#3a66b8', name: 'Sapphire' },
-  { key: 'emerald', hex: '#2f8566', name: 'Emerald' },
-  { key: 'garnet', hex: '#a3364a', name: 'Garnet' },
-  { key: 'amber', hex: '#c4902f', name: 'Amber' },
-  { key: 'plum', hex: '#7a4a8c', name: 'Plum' },
-  { key: 'teal', hex: '#2a8190', name: 'Teal' },
-  { key: 'copper', hex: '#b5683a', name: 'Copper' },
-  { key: 'slate', hex: '#5e6a7d', name: 'Slate' }
+  { key: 'sapphire', hex: '#4F6EE8', name: 'Blue' },
+  { key: 'emerald', hex: '#12A37A', name: 'Green' },
+  { key: 'garnet', hex: '#E0526A', name: 'Rose' },
+  { key: 'amber', hex: '#E19A22', name: 'Amber' },
+  { key: 'plum', hex: '#8B5CF6', name: 'Violet' },
+  { key: 'teal', hex: '#0EA2B8', name: 'Cyan' },
+  { key: 'copper', hex: '#EA7B3C', name: 'Orange' },
+  { key: 'slate', hex: '#64748B', name: 'Slate' }
 ];
 const colorHex = (key) => (GROUP_COLORS.find((c) => c.key === key) || GROUP_COLORS[7]).hex;
 
@@ -23,7 +23,7 @@ const DEFAULT_GROUPS = [
 ];
 
 const DEFAULT_SETTINGS = {
-  theme: 'ledger', userName: '', pinHash: null, pinSalt: null, lastBackup: null,
+  theme: 'system', autoLog: true, userName: '', pinHash: null, pinSalt: null, lastBackup: null,
   seeded: false, rolodexView: 'wheel', defaultCadence: 30, lockAfterMin: 5,
   installDismissed: false, createdAt: null
 };
@@ -66,6 +66,7 @@ const Store = {
   async load() {
     const [list, groups, settings] = await Promise.all([DB.allContacts(), DB.getMeta('groups'), DB.getMeta('settings')]);
     this.settings = { ...DEFAULT_SETTINGS, ...(settings || {}) };
+    if (!['system', 'light', 'dark'].includes(this.settings.theme)) this.settings.theme = 'system'; // migrate v1.0 themes
     this.groups = groups || DEFAULT_GROUPS.map((g) => ({ ...g }));
     this.contacts = new Map(list.map((c) => [c.id, normalizeContact(c)]));
     if (!settings) { this.settings.createdAt = new Date().toISOString(); await this.saveSettings(); }
@@ -121,7 +122,7 @@ function blankContact() {
     prefs: { method: '', bestTime: '', timezone: '' }, cadenceDays: null,
     nextStep: { text: '', due: '' }, pinned: [],
     spouse: { name: '', notes: '' }, anniversary: '', kids: [], pets: [],
-    hobbies: [], favoriteTreat: '', giftIdeas: '', gifts: [],
+    hobbies: [], favoriteTreat: '', favoriteLunch: '', favoriteDinner: '', giftIdeas: '', gifts: [],
     birthday: '', keyDates: [], touches: [], photos: [], connections: [],
     referredBy: null, metAt: '', custom: [], favorite: false,
     createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
@@ -302,7 +303,7 @@ function searchFields(c) {
     ...c.phones.map((p) => ['Phone', p.value]), ...c.emails.map((e) => ['Email', e.value]),
     ['City', [c.address.city, c.address.state].filter(Boolean).join(', ')],
     ['Spouse', c.spouse.name], ...c.kids.map((k) => ['Kid', k.name]), ...c.pets.map((p) => ['Pet', `${p.name} ${p.kind ? '(' + p.kind + ')' : ''}`]),
-    ...c.hobbies.map((h) => ['Hobby', h]), ['Favorite treat', c.favoriteTreat], ['Gift ideas', c.giftIdeas],
+    ...c.hobbies.map((h) => ['Hobby', h]), ['Favorite treat', c.favoriteTreat], ['Lunch spot', c.favoriteLunch], ['Dinner spot', c.favoriteDinner], ['Gift ideas', c.giftIdeas],
     ...c.tags.map((t) => ['Tag', t]), ...contactGroups(c).map((g) => ['Group', g.name]),
     ...c.pinned.map((p) => ['Pinned', p]), ['Next step', c.nextStep.text], ['Met', c.metAt],
     ...c.custom.map((x) => [x.label || 'Field', x.value]), ...c.gifts.map((g) => ['Gift', g.item]),

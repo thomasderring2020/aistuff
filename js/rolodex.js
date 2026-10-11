@@ -1,7 +1,7 @@
 /* Rolo — the 3D flipping rolodex wheel */
 'use strict';
 
-const TAB_COLORS = ['#3a66b8', '#2f8566', '#a3364a', '#c4902f', '#7a4a8c', '#2a8190', '#b5683a'];
+const TAB_COLORS = ['#4F6EE8', '#12A37A', '#E0526A', '#E19A22', '#8B5CF6', '#0EA2B8', '#EA7B3C'];
 
 class Rolodex {
   constructor(stage, { onOpen, onFront, onSettle } = {}) {
@@ -154,7 +154,7 @@ class Rolodex {
       e.preventDefault();
       cancelAnimationFrame(this.raf);
       const dy = e.deltaMode === 1 ? e.deltaY * 32 : e.deltaY;
-      this.pos = this.clamp(this.pos + dy * 0.0042);
+      this.pos = this.clamp(this.pos - dy * 0.0042); // reversed: scroll down = flip back
       this.target = this.pos;
       this.render();
       clearTimeout(snapT);
@@ -169,12 +169,12 @@ class Rolodex {
     });
     st.addEventListener('pointermove', (e) => {
       if (!drag || e.pointerId !== drag.id) return;
-      const dy = drag.y - e.clientY;
+      const dy = e.clientY - drag.y; // reversed: pull down to flip forward
       if (!drag.moved && Math.abs(dy) > 6) { drag.moved = true; try { st.setPointerCapture(e.pointerId); } catch {} }
       if (!drag.moved) return;
       const now = performance.now();
       const dt = Math.max(1, now - drag.lastT);
-      drag.v = 0.8 * ((drag.lastY - e.clientY) / dt) + 0.2 * drag.v;
+      drag.v = 0.8 * ((e.clientY - drag.lastY) / dt) + 0.2 * drag.v;
       drag.lastY = e.clientY; drag.lastT = now;
       this.pos = this.clamp(drag.pos + dy / 64);
       this.target = this.pos;

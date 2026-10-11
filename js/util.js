@@ -82,12 +82,13 @@ function toast(msg, opts = {}) {
   const root = $('#toast-root');
   const el = document.createElement('div');
   el.className = 'toast';
-  el.innerHTML = `<span>${esc(msg)}</span>` + (opts.action ? `<button class="toast-btn">${esc(opts.action)}</button>` : '');
+  const actions = opts.actions || (opts.action ? [{ label: opts.action, onAction: opts.onAction }] : []);
+  el.innerHTML = `<span>${esc(msg)}</span>` + actions.map((a, i) => `<button class="toast-btn ${i ? 'ghost' : ''}" data-i="${i}">${esc(a.label)}</button>`).join('');
   root.appendChild(el);
   requestAnimationFrame(() => el.classList.add('show'));
   const close = () => { el.classList.remove('show'); setTimeout(() => el.remove(), 250); };
-  if (opts.action) el.querySelector('.toast-btn').onclick = () => { close(); opts.onAction && opts.onAction(); };
-  setTimeout(close, opts.duration || (opts.action ? 7000 : 2600));
+  el.querySelectorAll('.toast-btn').forEach((b) => { b.onclick = () => { close(); const a = actions[+b.dataset.i]; a.onAction && a.onAction(); }; });
+  setTimeout(close, opts.duration || (actions.length ? 7000 : 2600));
   return close;
 }
 
