@@ -25,7 +25,7 @@ const DEFAULT_GROUPS = [
 const DEFAULT_SETTINGS = {
   theme: 'system', autoLog: true, userName: '', pinHash: null, pinSalt: null, lastBackup: null,
   seeded: false, rolodexView: 'wheel', defaultCadence: 30, lockAfterMin: 5,
-  installDismissed: false, createdAt: null
+  installDismissed: false, introSeen: false, createdAt: null
 };
 
 const TOUCH_TYPES = {

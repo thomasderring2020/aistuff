@@ -67,6 +67,7 @@ function renderSettings(main) {
     <section class="section"><div class="section-head"><h2>${icon('cards')}Data</h2></div>
       <div class="menu-list settings-list">
         <a class="menu-item" href="#/import">${icon('upload')}<span class="tx"><b>Import & export</b><small>Phone contacts, Excel/CSV, backups</small></span>${icon('chevron')}</a>
+        <button class="menu-item" data-act="intro">${icon('sparkle')}<span class="tx"><b>Watch the intro</b><small>30-second tour of Rolo</small></span>${icon('chevron')}</button>
         <button class="menu-item" data-act="install">${icon('smartphone')}<span class="tx"><b>Install Rolo on your phone</b><small>${isStandalone() ? 'Installed ✓' : 'Add to home screen'}</small></span>${icon('chevron')}</button>
         <button class="menu-item" data-act="sample">${icon('sparkle')}<span class="tx"><b>Load sample contacts</b><small>25 made-up people to explore with</small></span>${icon('chevron')}</button>
         <button class="menu-item" data-act="clear" style="color:var(--danger)">${icon('trash')}<span class="tx"><b>Erase all contacts</b><small>Back up first — this can't be undone</small></span></button>
@@ -97,6 +98,7 @@ function renderSettings(main) {
       case 'pin': setPinFlow(); break;
       case 'rm-pin': if (await confirmDialog('Remove your passcode?', { ok: 'Remove' })) { Store.settings.pinHash = null; await Store.saveSettings(); toast('Passcode removed'); } break;
       case 'install': showInstallHelp(); break;
+      case 'intro': Intro.play(); break;
       case 'sample': {
         if (!(await confirmDialog('Add 25 sample contacts? Your own contacts stay as they are.', { ok: 'Add samples' }))) return;
         DEFAULT_GROUPS.forEach((dg) => { if (!Store.group(dg.id)) Store.groups.push({ ...dg }); });

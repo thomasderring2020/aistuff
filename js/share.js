@@ -59,14 +59,14 @@ async function cardImage(c, inc) {
   x.restore();
   x.fillStyle = contactColor(c); x.beginPath(); x.roundRect(cx, cy + 40, 10, ch - 80, [0, 6, 6, 0]); x.fill();
   // name
-  x.fillStyle = ink; x.font = '700 70px Inter, system-ui, sans-serif'; x.textBaseline = 'alphabetic';
+  x.fillStyle = ink; x.font = '700 70px Geist, system-ui, sans-serif'; x.textBaseline = 'alphabetic';
   x.fillText(fullName(c), cx + 70, cy + 140, cw - 140);
   let y = cy + 196;
-  if (inc.work && roleLine(c)) { x.fillStyle = ink2; x.font = '400 34px Inter, system-ui, sans-serif'; x.fillText(roleLine(c), cx + 72, y, cw - 140); y += 30; }
+  if (inc.work && roleLine(c)) { x.fillStyle = ink2; x.font = '400 34px Geist, system-ui, sans-serif'; x.fillText(roleLine(c), cx + 72, y, cw - 140); y += 30; }
   // dashed rule
   x.strokeStyle = 'rgba(0,0,0,.18)'; x.setLineDash([12, 8]); x.lineWidth = 2; x.beginPath(); x.moveTo(cx + 70, y + 22); x.lineTo(cx + cw - 70, y + 22); x.stroke(); x.setLineDash([]);
   y += 90;
-  x.fillStyle = ink; x.font = '500 38px Inter, system-ui, sans-serif';
+  x.fillStyle = ink; x.font = '500 38px Geist, system-ui, sans-serif';
   const lines = [];
   if (inc.phone) c.phones.slice(0, 2).forEach((p) => lines.push(`${fmtPhone(p.value)}  ${p.label ? '· ' + p.label : ''}`));
   if (inc.email) c.emails.slice(0, 1).forEach((e) => lines.push(e.value));
@@ -74,7 +74,7 @@ async function cardImage(c, inc) {
   if (inc.linkedin && c.linkedin) lines.push(linkedinUrl(c.linkedin).replace(/^https?:\/\/(www\.)?/, ''));
   lines.slice(0, 4).forEach((l) => { x.fillText(l, cx + 72, y, cw - 140); y += 56; });
   // footer
-  x.fillStyle = ink2; x.font = '600 22px Inter, system-ui, sans-serif'; x.textAlign = 'right';
+  x.fillStyle = ink2; x.font = '600 22px Geist, system-ui, sans-serif'; x.textAlign = 'right';
   x.fillText('shared with Rolo', cx + cw - 50, cy + ch - 34);
   x.textAlign = 'left';
   return new Promise((res) => cv.toBlob(res, 'image/png'));

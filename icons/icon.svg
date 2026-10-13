@@ -1,16 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#1B1E26"/>
-  <!-- back card -->
-  <rect x="140" y="146" width="232" height="150" rx="16" fill="#3A404F"/>
-  <!-- tab card -->
-  <path d="M128 192 h92 a10 10 0 0 0 9-6 l7-14 a10 10 0 0 1 9-6 h56 a10 10 0 0 1 10 10 v16 h73 a16 16 0 0 1 16 16 v124 a16 16 0 0 1 -16 16 h-256 a16 16 0 0 1 -16 -16 v-124 a16 16 0 0 1 16 -16z" fill="#FFFFFF"/>
-  <rect x="235" y="174" width="54" height="10" rx="5" fill="#6366F1"/>
-  <rect x="148" y="230" width="128" height="16" rx="8" fill="#1B1E26"/>
-  <rect x="148" y="262" width="196" height="10" rx="5" fill="#CBD5E1"/>
-  <rect x="148" y="284" width="152" height="10" rx="5" fill="#CBD5E1"/>
-  <rect x="120" y="192" width="8" height="156" rx="0" fill="#6366F1"/>
-  <!-- rail -->
-  <rect x="104" y="368" width="304" height="12" rx="6" fill="#6B7385"/>
-  <circle cx="104" cy="374" r="13" fill="#8A93A6"/>
-  <circle cx="408" cy="374" r="13" fill="#8A93A6"/>
+  <rect width="512" height="512" fill="#111412"/>
+  <rect x="150" y="150" width="212" height="132" rx="10" fill="none" stroke="#4A524E" stroke-width="4"/>
+  <path d="M120 196 h96 l10 -24 h56 v24 h110 a10 10 0 0 1 10 10 v136 a10 10 0 0 1 -10 10 h-272 a10 10 0 0 1 -10 -10 v-136 a10 10 0 0 1 10 -10z" fill="#F6F7F4"/>
+  <rect x="144" y="226" width="118" height="14" rx="2" fill="#111412"/>
+  <rect x="144" y="258" width="190" height="6" rx="1" fill="#B9BEB8"/>
+  <rect x="144" y="276" width="150" height="6" rx="1" fill="#B9BEB8"/>
+  <rect x="352" y="222" width="14" height="14" rx="2" fill="#2FA37F"/>
+  <rect x="100" y="376" width="312" height="4" fill="#868C88"/>
+  <rect x="94" y="370" width="16" height="16" rx="3" fill="#B9BEB8"/>
+  <rect x="402" y="370" width="16" height="16" rx="3" fill="#B9BEB8"/>
 </svg>

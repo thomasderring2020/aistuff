@@ -198,6 +198,11 @@ async function boot() {
   setInterval(() => { const r = currentRoute().name; if ((r === 'today') && !document.hidden && !sheetStack.length) onStoreChange(); }, 60000);
   renderRoute();
 
+  // First open: play the intro once
+  if (!Store.settings.introSeen && !/[?&]nointro/.test(location.search)) {
+    setTimeout(() => Intro.play(async () => { Store.settings.introSeen = true; await Store.saveSettings(); }), 400);
+  }
+
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
   if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 }

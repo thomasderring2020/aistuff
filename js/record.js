@@ -28,8 +28,8 @@ function briefHTML(c) {
   if (c.nextStep.text) items.push(['bell', `<b>Next step:</b> ${esc(c.nextStep.text)}`]);
   const lt2 = localTimeFor(c);
   if (lt2 && !lt2.same) items.push(['globe', `It's <b>${esc(lt2.time)}</b> for them (${esc(lt2.tzName)})${lt2.awake ? '' : ' — maybe text instead'}`]);
-  if (!items.length) return `<div class="brief"><h3>${icon('sparkle')}Before you call</h3><ul><li>${icon('edit')}<span>Add family, hobbies and call notes — Rolo will turn them into a 10-second brief right here.</span></li></ul></div>`;
-  return `<div class="brief"><h3>${icon('sparkle')}Before you call</h3><ul>${items.map(([i, t]) => `<li>${icon(i)}<span>${t}</span></li>`).join('')}</ul></div>`;
+  if (!items.length) return `<div class="brief ticks"><h3>${icon('sparkle')}Before you call</h3><ul><li>${icon('edit')}<span>Add family, hobbies and call notes — Rolo will turn them into a 10-second brief right here.</span></li></ul></div>`;
+  return `<div class="brief ticks"><h3>${icon('sparkle')}Before you call</h3><ul>${items.map(([i, t]) => `<li>${icon(i)}<span>${t}</span></li>`).join('')}</ul></div>`;
 }
 
 function renderRecord(container, id) {
@@ -57,7 +57,7 @@ function renderRecord(container, id) {
       <button class="icon-btn" data-act="more" aria-label="More">${icon('dots')}</button>
     </div>
 
-    <div class="rec-hero paper">
+    <div class="rec-hero paper ticks">
       <div class="top">
         <button class="avatar" data-act="photo" style="--s:74px;--c:${contactColor(c)};border:0;padding:0" aria-label="Change photo">${c.photo ? `<img src="${c.photo}" alt="">` : esc(initials(c))}</button>
         <div style="min-width:0">
@@ -177,6 +177,7 @@ function renderRecord(container, id) {
         ${c.tags.length ? `<div class="cline"><div class="k">Tags</div><div class="v"><div class="pill-list">${c.tags.map((t) => `<a class="pill" style="text-decoration:none;font-size:12.5px" href="#/search?q=${encodeURIComponent(t)}">${esc(t)}</a>`).join('')}</div></div></div>` : ''}
       </div>
       <p class="muted" style="font-size:12px;margin-top:10px;text-align:center">Added ${esc(fmtDate(c.createdAt, { year: true }))} · Updated ${esc(relDay(c.updatedAt))}</p>`)}
+    <div class="hatch"></div>
     <div class="rec-delete"><button class="btn sm" data-act="delete">${icon('trash')}Delete contact</button></div>
   </div>`;
 

@@ -21,7 +21,7 @@ Notes are sent to Anthropic through `api/intake.js` only when you tap "Sort it".
 ## Project layout
 ```
 index.html            app shell
-styles.css            all styles + light/dark themes (Slate + Indigo)
+styles.css            all styles + light/dark tokens; v1.4 design layer at the end
 sw.js                 offline cache — bump VERSION on each deploy
 manifest.webmanifest  install-as-app settings
 js/util.js            helpers, sheets, toasts, image compression
@@ -33,11 +33,12 @@ js/views.js           Today, Rolo (wheel + list), Search
 js/record.js          contact record page + its sheets
 js/editor.js          add / edit form
 js/intake.js          Quick intake: dictation, on-device parser, review screen
+js/intro.js           intro tour (timeline-driven; Intro.play())
 js/share.js           share card (vCard / text / image), print cards
 js/importer.js        phone picker, .vcf / CSV / Excel import, export, backup
 js/settings.js        settings, groups, themes, passcode, install help
 js/app.js             router + boot
-fonts/                Inter (SIL OFL)
+fonts/                Geist + Geist Mono (SIL OFL)
 api/intake.js         Vercel function for optional AI sorting
 vendor/xlsx.full.min.js  SheetJS, loaded only when importing Excel (Apache-2.0)
 ```

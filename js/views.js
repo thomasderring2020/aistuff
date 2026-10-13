@@ -14,7 +14,7 @@ function warmthHTML(c, withLabel = true) {
   return `<span class="warmth ${w.key}" title="Keep-in-touch every ${w.cadence} days"><span class="bars">${bars}</span>${withLabel ? esc(txt) : ''}</span>`;
 }
 function groupTagsHTML(c) {
-  return contactGroups(c).map((g) => `<span class="gtag" style="background:${colorHex(g.color)}">${esc(g.name)}</span>`).join('');
+  return contactGroups(c).map((g) => `<span class="gtag"><i style="background:${colorHex(g.color)}"></i>${esc(g.name)}</span>`).join('');
 }
 function roleLine(c) {
   return [c.title, c.company && (c.firstName || c.lastName) ? c.company : ''].filter(Boolean).join(' · ');
@@ -72,12 +72,12 @@ function renderToday(main) {
   const showInstall = !isStandalone() && !s.installDismissed;
 
   main.innerHTML = `<div class="fade-in">
-    <div class="hello">
+    <div class="hello dots-bg">
       <div class="date">${esc(dateStr)}</div>
       <h1>${greeting()}${name}.<span class="line">${line}</span></h1>
     </div>
 
-    <div class="stats">
+    <div class="stats ticks">
       <a class="stat ${overdue.length ? 'alert' : ''}" href="#fu"><div class="n">${overdue.length}</div><div class="l">Overdue</div></a>
       <a class="stat" href="#fu"><div class="n">${thisWeek.length}</div><div class="l">Due this week</div></a>
       <a class="stat gold" href="#dates"><div class="n">${datesWeek.length}</div><div class="l">Dates this week</div></a>
